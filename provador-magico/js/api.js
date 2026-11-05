@@ -74,7 +74,10 @@ export async function criarCrianca(cli, { nome, data_nascimento, genero }) {
   return ok(await sb.from('criancas').insert({ empresa_id: cli.empresa_id, cliente_id: cli.id, nome, data_nascimento, genero }).select().single());
 }
 export async function salvarAvatar(crianca, params) {
-  return ok(await sb.from('pm_avatares').upsert({ crianca_id: crianca.id, empresa_id: crianca.empresa_id, params }, { onConflict: 'crianca_id' }));
+  // update só da coluna params (o banco não deixa trocar criança/empresa); se ainda não existe, insere
+  const r = ok(await sb.from('pm_avatares').update({ params }).eq('crianca_id', crianca.id).select('crianca_id'));
+  if (r?.length) return r;
+  return ok(await sb.from('pm_avatares').insert({ crianca_id: crianca.id, empresa_id: crianca.empresa_id, params }));
 }
 export async function salvarLook(crianca, tema, pecas) {
   return ok(await sb.from('pm_looks').insert({ empresa_id: crianca.empresa_id, crianca_id: crianca.id, tema, pecas }).select().single());

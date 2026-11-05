@@ -3,7 +3,7 @@
 export const CONFIG = {
   SISTEMA: 'Provador Mágico',
   PLATAFORMA: '3Verso',
-  VERSAO: '0.1.1.1',
+  VERSAO: '0.1.2.0',
   DESENVOLVEDOR: 'Vettore Sistemas',
   SUPABASE_URL: 'https://tvcvanvnjbfzmsspiyxb.supabase.co',
   SUPABASE_KEY: 'sb_publishable_HAiRkJ5AuWNosaTMiOiHbg_rIrk85-u',
