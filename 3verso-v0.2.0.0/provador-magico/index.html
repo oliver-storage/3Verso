@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>Provador Mágico</title>
+<meta name="description" content="Monte o look da criança em 3D, gere o card e ganhe desconto.">
+<meta name="theme-color" content="#e84a7f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<script src="vendor/supabase.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script type="importmap">{ "imports": { "three": "./vendor/three.module.js" } }</script>
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<!-- carregando -->
+<div id="carregando" class="tela ativa centro">
+  <div class="logo-loja"><img id="logo-carregando" alt=""><b id="nome-carregando">Provador Mágico</b></div>
+  <div class="barra"><i id="barra"></i></div>
+  <p id="msg-carregando">Preparando a loja…</p>
+</div>
+
+<!-- entrada / login -->
+<div id="entrada" class="tela centro">
+  <div class="cartao">
+    <div class="logo-loja"><img class="logo-img" alt=""><b class="nome-loja"></b></div>
+    <h1>Provador Mágico</h1>
+    <p class="sub">Monte o look da criança em 3D, gere o card e ganhe desconto!</p>
+    <div class="abas"><button data-aba="entrar" class="ativa">Entrar</button><button data-aba="criar">Criar conta</button></div>
+    <form id="f-entrar">
+      <input name="email" type="email" placeholder="E-mail" autocomplete="email" required>
+      <input name="senha" type="password" placeholder="Senha" autocomplete="current-password" required>
+      <button class="btn">Entrar</button>
+      <a href="#" id="esqueci">Esqueci minha senha</a>
+    </form>
+    <form id="f-criar" hidden>
+      <input name="nome" placeholder="Seu nome (responsável)" required minlength="2" maxlength="120">
+      <input name="email" type="email" placeholder="E-mail" autocomplete="email" required>
+      <input name="senha" type="password" placeholder="Senha (10+ caracteres)" autocomplete="new-password" required minlength="10">
+      <small>Use maiúscula, minúscula, número e símbolo.</small>
+      <button class="btn">Criar conta</button>
+    </form>
+    <div class="ou"><span>ou</span></div>
+    <div class="sociais">
+      <button class="btn-social" data-prov="google"><svg viewBox="0 0 48 48" width="20"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Google</button>
+      <button class="btn-social" data-prov="facebook"><svg viewBox="0 0 24 24" width="20"><path fill="#1877F2" d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.4l-.5 3.5h-2.9v8.4A12 12 0 0 0 24 12z"/></svg>Facebook</button>
+    </div>
+    <p class="msg" id="msg-entrada"></p>
+  </div>
+  <footer class="rodape"></footer>
+</div>
+
+<!-- completar cadastro do responsável -->
+<div id="completar" class="tela centro">
+  <form class="cartao" id="f-completar">
+    <h2>Quase lá! 👋</h2>
+    <p class="sub">Complete seu cadastro de responsável.</p>
+    <input name="nome" placeholder="Seu nome" required minlength="2" maxlength="120">
+    <input name="whatsapp" type="tel" placeholder="WhatsApp com DDD (ex.: 85 99999-9999)" required>
+    <label class="check"><input type="checkbox" name="lgpd" required>
+      <span>Sou o responsável legal e autorizo o uso dos dados das crianças que eu cadastrar, conforme os <a href="#" class="ver-termos">termos e a política de privacidade</a> (LGPD, art. 14).</span></label>
+    <label class="check"><input type="checkbox" name="marketing"><span>Quero receber novidades e cupons pelo WhatsApp.</span></label>
+    <button class="btn">Continuar</button>
+    <p class="msg"></p>
+  </form>
+</div>
+
+<!-- crianças -->
+<div id="criancas" class="tela centro">
+  <div class="cartao largo">
+    <div class="topo-cartao"><h2>Quem vai brincar hoje?</h2><button class="btn-texto" id="sair1">Sair</button></div>
+    <div id="lista-criancas" class="grade-criancas"></div>
+    <details id="nova-crianca">
+      <summary class="btn sec">+ Adicionar criança</summary>
+      <form id="f-crianca">
+        <input name="nome" placeholder="Nome da criança" required maxlength="60">
+        <label>Data de nascimento<input name="nasc" type="date" required></label>
+        <div class="seg"><label><input type="radio" name="genero" value="menina" required><span>👧 Menina</span></label>
+          <label><input type="radio" name="genero" value="menino"><span>👦 Menino</span></label></div>
+        <button class="btn">Salvar</button>
+        <p class="msg"></p>
+      </form>
+    </details>
+  </div>
+</div>
+
+<!-- editor de avatar -->
+<div id="editor" class="tela painel-lado">
+  <div class="painel">
+    <div class="topo-cartao"><h2>Desenhe o avatar</h2><span class="tag" id="ed-idade"></span></div>
+    <nav class="abas-ed" id="abas-ed"></nav>
+    <div id="ed-conteudo" class="ed-conteudo"></div>
+    <div class="acoes"><button class="btn sec" id="ed-girar">↻ Girar</button><button class="btn" id="ed-salvar">Salvar e entrar na loja</button></div>
+  </div>
+</div>
+
+<!-- HUD da loja / temas -->
+<div id="hud" class="tela hud">
+  <div class="hud-topo">
+    <button class="chip" id="h-voltar" hidden>← Loja</button>
+    <span class="chip titulo" id="h-local">Loja</span>
+    <span class="espaco"></span>
+    <button class="chip" id="h-provador">👗 Provador</button>
+    <button class="chip" id="h-cupons">🎁 Cupons</button>
+    <button class="chip" id="h-menu">☰</button>
+  </div>
+  <div id="menu" class="menu" hidden>
+    <button data-m="avatar">✏️ Editar avatar</button>
+    <button data-m="criancas">👨‍👩‍👧 Trocar criança</button>
+    <button data-m="acenar">👋 Acenar</button>
+    <button data-m="dancar">💃 Dançar</button>
+    <button data-m="sair">🚪 Sair</button>
+  </div>
+  <button id="acao-zona" class="btn grande" hidden></button>
+  <div id="joy" class="joy"><i></i></div>
+  <p class="dica" id="dica">Ande com as setas/WASD ou o controle. Entre nos portais dos temas!</p>
+</div>
+
+<!-- provador -->
+<div id="provador" class="tela painel-lado">
+  <div class="painel">
+    <div class="topo-cartao"><h2>Provador <small id="pv-tema"></small></h2><button class="btn-texto" id="pv-fechar">✕</button></div>
+    <div class="filtros" id="pv-slots"></div>
+    <div class="grade-pecas" id="pv-pecas"></div>
+    <div id="pv-cores" class="pv-cores" hidden></div>
+    <div class="acoes">
+      <button class="btn sec" id="pv-whats">🛍️ Quero essas peças</button>
+      <button class="btn" id="pv-card">📸 Gerar card</button>
+    </div>
+  </div>
+</div>
+
+<!-- card -->
+<div id="card" class="tela modal">
+  <div class="cartao largo">
+    <div class="topo-cartao"><h2>Seu card</h2><button class="btn-texto" id="cd-fechar">✕</button></div>
+    <div class="card-grid">
+      <div class="card-prev"><img id="cd-img" alt="Prévia do card"></div>
+      <div class="card-op">
+        <label>Modelo<select id="cd-modelo"></select></label>
+        <label>Formato<select id="cd-formato"></select></label>
+        <label>Pose<select id="cd-pose"></select></label>
+        <div class="acoes col">
+          <button class="btn" id="cd-compartilhar">📤 Compartilhar</button>
+          <button class="btn sec" id="cd-baixar">⬇️ Baixar</button>
+        </div>
+        <div class="ganhe">
+          <h3>🎁 Ganhe desconto</h3>
+          <div id="cd-regras"></div>
+          <ol><li>Poste o card no Instagram marcando <b class="ig-loja"></b>.</li><li>Envie aqui o link do post ou um print.</li><li>A loja confere e o cupom aparece em "Cupons".</li></ol>
+          <form id="f-post">
+            <input name="link" type="url" placeholder="https://www.instagram.com/p/…">
+            <label class="arquivo">ou print: <input name="print" type="file" accept="image/png,image/jpeg,image/webp"></label>
+            <button class="btn">Enviar para validação</button>
+            <p class="msg"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- cupons -->
+<div id="cupons" class="tela modal">
+  <div class="cartao largo">
+    <div class="topo-cartao"><h2>Meus cupons</h2><button class="btn-texto" id="cp-fechar">✕</button></div>
+    <div id="cp-lista"></div>
+    <h3>Posts enviados</h3>
+    <div id="cp-posts"></div>
+    <p class="sub">Indique uma amiga com o código: <b id="cp-indicacao"></b></p>
+  </div>
+</div>
+
+<!-- termos -->
+<div id="termos" class="tela modal">
+  <div class="cartao largo texto">
+    <div class="topo-cartao"><h2>Termos e Privacidade</h2><button class="btn-texto" id="tm-fechar">✕</button></div>
+    <p><b>Quem trata os dados:</b> a loja <span class="nome-loja"></span>, com tecnologia da <span class="dev"></span>.</p>
+    <p><b>O que coletamos:</b> do responsável, nome, e-mail e WhatsApp; da criança, nome, data de nascimento e menino/menina, além do avatar e dos looks montados.</p>
+    <p><b>Para quê:</b> montar o avatar na faixa etária certa, sugerir tamanhos, gerar os cards, validar posts e enviar cupons (inclusive de aniversário).</p>
+    <p><b>Crianças (LGPD, art. 14):</b> os dados das crianças só são cadastrados pelo responsável legal, com o consentimento dado neste cadastro. Não pedimos foto, endereço nem documento da criança.</p>
+    <p><b>Seus direitos:</b> você pode ver, corrigir ou excluir seus dados e os das crianças a qualquer momento, pela loja ou em "Trocar criança".</p>
+    <p><b>Segurança:</b> os dados ficam em banco com acesso restrito; outras lojas e outros usuários não têm acesso.</p>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

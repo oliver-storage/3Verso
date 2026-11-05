@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3Verso • Gestão de projetos</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/portal.css">
+<script src="vendor/supabase.js"></script>
+</head>
+<body>
+<section id="login" class="login">
+  <form class="caixa" id="f-login">
+    <h1>3Verso</h1>
+    <p>Gestão de projetos</p>
+    <input name="email" type="email" placeholder="E-mail" required autocomplete="email">
+    <input name="senha" type="password" placeholder="Senha" required autocomplete="current-password">
+    <button class="bt">Entrar</button>
+    <button type="button" class="link" id="esqueci">Esqueci a senha</button>
+    <p class="msg"></p>
+    <footer class="rodape"></footer>
+  </form>
+</section>
+
+<div id="app" class="app" hidden>
+  <aside class="menu" id="menu">
+    <button class="m-toggle" id="m-toggle" title="Recolher/expandir">☰</button>
+    <nav>
+      <a data-v="projetos" title="Projetos"><i>🧩</i><span>Projetos</span></a>
+      <a data-v="empresas" title="Empresas" class="so-super" hidden><i>🏢</i><span>Empresas</span></a>
+      <a data-v="catalogo" title="Catálogo de projetos" class="so-super" hidden><i>📦</i><span>Catálogo</span></a>
+      <a data-v="equipe" title="Equipes" class="so-super" hidden><i>🧑‍💼</i><span>Equipes</span></a>
+    </nav>
+    <a id="m-sair" title="Sair"><i>🚪</i><span>Sair</span></a>
+  </aside>
+  <main>
+    <header class="topo"><h2 id="titulo">Projetos</h2><span id="quem" class="aviso"></span></header>
+    <div id="vista" class="vista"></div>
+    <footer class="rodape"></footer>
+  </main>
+</div>
+<div id="toast" class="toast"></div>
+<script type="module" src="js/portal.js"></script>
+</body>
+</html>

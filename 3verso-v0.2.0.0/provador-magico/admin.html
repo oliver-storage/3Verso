@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin • Provador Mágico</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+<script src="vendor/supabase.js"></script>
+</head>
+<body>
+<!-- login -->
+<section id="login" class="login">
+  <form class="caixa" id="f-login">
+    <h1>Provador Mágico</h1>
+    <p>Área da loja</p>
+    <input name="email" type="email" placeholder="E-mail" required autocomplete="email">
+    <input name="senha" type="password" placeholder="Senha" required autocomplete="current-password">
+    <button class="bt">Entrar</button>
+    <p class="msg"></p>
+    <footer class="rodape"></footer>
+  </form>
+</section>
+
+<!-- app -->
+<div id="app" class="app" hidden>
+  <aside class="menu" id="menu">
+    <button class="m-toggle" id="m-toggle" title="Recolher/expandir">☰</button>
+    <nav>
+      <a data-v="painel" title="Painel"><i>📊</i><span>Painel</span></a>
+      <a data-v="posts" title="Posts para aprovar"><i>📸</i><span>Posts</span><em id="badge-posts" hidden></em></a>
+      <a data-v="cupons" title="Cupons"><i>🎟️</i><span>Cupons</span></a>
+      <a data-v="leads" title="Cadastros (leads)"><i>👨‍👩‍👧</i><span>Cadastros</span></a>
+      <a data-v="marca" title="Marca e contatos"><i>🎨</i><span>Marca</span></a>
+      <a data-v="equipe" title="Equipe"><i>🧑‍💼</i><span>Equipe</span></a>
+      <a data-v="empresas" title="Empresas (3Verso)" class="so-super" hidden><i>🏢</i><span>Empresas</span></a>
+    </nav>
+    <a href="../" class="so-super" hidden title="Portal 3Verso (todos os projetos)"><i>🧩</i><span>Portal 3Verso</span></a>
+    <a class="m-sair" id="m-sair" title="Sair"><i>🚪</i><span>Sair</span></a>
+  </aside>
+  <main>
+    <header class="topo">
+      <h2 id="titulo">Painel</h2>
+      <select id="sel-empresa" title="Empresa"></select>
+      <a id="ver-loja" class="bt sec" target="_blank" rel="noopener">Abrir loja ↗</a>
+    </header>
+    <div id="vista" class="vista"></div>
+    <footer class="rodape"></footer>
+  </main>
+</div>
+<div id="toast" class="toast"></div>
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>
